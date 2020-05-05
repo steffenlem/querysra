@@ -307,7 +307,6 @@ def summary_statistic_bases(healthy_runs, tumor_runs, unresolved_runs, undefined
 
 def get_id_from_accn(accn, api_key):
     base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=sra&term="
-    # api_key = "702f4a3b99c88a65efe86d822642e3900208"
     suffix_url = "&api_key="
 
     url = base_url + accn + suffix_url + api_key

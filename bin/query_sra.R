@@ -70,4 +70,4 @@ human_rna_seq <- dbGetQuery(sra_con, query_string)
 print("test")
 nrow(human_rna_seq)
 
-write.table(human_rna_seq, file=paste(paste('filtered_runs_',  paste(keywords,collapse="_", sep = ""), sep=""), '.tsv', sep = ""),sep="\t", col.names=NA)
+write.table(human_rna_seq, file='prefiltering.tsv', sep="\t", col.names=NA)

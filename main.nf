@@ -207,7 +207,7 @@ process SRAdb {
     file(database_file) from sradb_file
 
     output:
-    file "filtered_runs_*" into prefiltered_runs
+    file "prefiltering.tsv" into prefiltered_runs
 
     script:
     def sradb = database_file != 'NO_FILE' ? "-db $database_file" : ''
