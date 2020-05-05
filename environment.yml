@@ -8,7 +8,7 @@ channels:
 dependencies:
   # TODO nf-core: Add required software dependencies here
   - conda-forge::r-markdown=1.1
-  - conda-forge::r-base=3.6.1
+  - conda-forge::r-base=3.6.3
   - conda-forge::r-findpython=1.0.5
   - conda-forge::r-argparse=2.0.1
   - conda-forge::r-jsonlite=1.6.1
