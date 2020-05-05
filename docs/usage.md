@@ -1,4 +1,4 @@
-# nf-core/querysra: Usage
+# steffenlem/querysra: Usage
 
 ## Table of contents
 
