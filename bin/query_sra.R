@@ -64,10 +64,8 @@ sra_con <- dbConnect(SQLite(),sqlfile)
 # create query
 query_string <- paste(sprintf("select * from sra as sra  WHERE sra.library_strategy= %s AND sra.taxon_id= %s AND", sprintf("\"%s\"", args$library_strategy), toString(args$taxon_id)), complete_keyword_str)
 query_string
-print("-1test")
 # search db
 human_rna_seq <- dbGetQuery(sra_con, query_string)
-print("test")
 nrow(human_rna_seq)
 
 write.table(human_rna_seq, file='prefiltering.tsv', sep="\t", col.names=NA)
