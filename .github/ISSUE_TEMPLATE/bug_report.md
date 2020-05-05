@@ -1,4 +1,4 @@
-# nf-core/querysra bug report
+# steffenlem/querysra bug report
 
 Hi there!
 
