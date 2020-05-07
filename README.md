@@ -7,7 +7,7 @@
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.10.0-brightgreen.svg)](https://www.nextflow.io/)
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
-[![Docker](https://img.shields.io/docker/automated/nfcore/querysra.svg)](https://hub.docker.com/r/steffenlem/querysra)
+[![Docker](https://img.shields.io/docker/automated/steffenlem/querysra.svg)](https://hub.docker.com/r/steffenlem/querysra)
 
 ## Introduction
 
@@ -42,8 +42,8 @@ The nf-core/querysra pipeline comes with documentation about the pipeline, found
 1. [Installation](https://nf-co.re/usage/installation)
 2. Pipeline configuration
     * [Local installation](https://nf-co.re/usage/local_installation)
-    * [Adding your own system config](https://nf-co.re/usage/adding_own_config)
-    * [Reference genomes](https://nf-co.re/usage/reference_genomes)
+    <!-- * [Adding your own system config](https://nf-co.re/usage/adding_own_config)
+    * [Reference genomes](https://nf-co.re/usage/reference_genomes)-->
 3. [Running the pipeline](docs/usage.md)
 4. [Output and how to interpret the results](docs/output.md)
 5. [Troubleshooting](https://nf-co.re/usage/troubleshooting)
