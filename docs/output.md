@@ -24,7 +24,7 @@ Samples in the SRA database are scanned for a provided set of prefiltering keywo
 
 ## keyword_filtering
 
-[keyword_filtering] 
+The samples are classified into multiple classes according to a provided set of defining keywords for each class. 
 
 **Output directory: `results/keyword_filtering`**
 
