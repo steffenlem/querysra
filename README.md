@@ -1,9 +1,9 @@
-# ![steffenlem/querysra](docs/images/nf-core-querysra_logo.png)
+<!--# ![steffenlem/querysra](docs/images/nf-core-querysra_logo.png) -->
 
 **This pipeline queries the SRA database using metadata information.**.
 
 [![GitHub Actions CI Status](https://github.com/steffenlem/querysra/workflows/nf-core%20CI/badge.svg)](https://github.com/steffenlem/querysra/actions)
-[![GitHub Actions Linting Status](https://github.com/steffenlem/querysra/workflows/nf-core%20linting/badge.svg)](https://github.com/steffenlem/querysra/actions)
+<!--[![GitHub Actions Linting Status](https://github.com/steffenlem/querysra/workflows/nf-core%20linting/badge.svg)](https://github.com/steffenlem/querysra/actions) -->
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.10.0-brightgreen.svg)](https://www.nextflow.io/)
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
@@ -37,7 +37,7 @@ See [usage docs](docs/usage.md) for all of the available options when running th
 
 ## Documentation
 
-The nf-core/querysra pipeline comes with documentation about the pipeline, found in the `docs/` directory:
+The steffenlem/querysra pipeline comes with documentation about the pipeline, found in the `docs/` directory:
 
 1. [Installation](https://nf-co.re/usage/installation)
 2. Pipeline configuration
