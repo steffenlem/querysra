@@ -1,16 +1,10 @@
-# nf-core/querysra: Changelog
+# steffenlem/querysra: Changelog
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v1.0dev - [date]
+## 1.0.0 - [08-05-2020]
 
-Initial release of nf-core/querysra, created with the [nf-core](http://nf-co.re/) template.
+First version of steffenlem/querysra, created with the [nf-core](http://nf-co.re/) template.
 
-### `Added`
 
-### `Fixed`
-
-### `Dependencies`
-
-### `Deprecated`

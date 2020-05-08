@@ -1,4 +1,4 @@
-# nf-core/querysra: Output
+# steffenlem/querysra: Output
 
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
@@ -9,35 +9,28 @@ This document describes the output produced by the pipeline. Most of the plots a
 The pipeline is built using [Nextflow](https://www.nextflow.io/)
 and processes data using the following steps:
 
-* [FastQC](#fastqc) - read quality control
-* [MultiQC](#multiqc) - aggregate report, describing results of the whole pipeline
+* [SRAdb](#sradb) - Search the SRA database for samples containing the preselection keywords.
+* [keyword_filtering](#keywordfiltering) - Filtering and classification of samples.
 
-## FastQC
+## SRAdb
 
-[FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your reads. It provides information about the quality score distribution across your reads, the per base sequence content (%T/A/G/C). You get information about adapter contamination and other overrepresented sequences.
+Samples in the SRA database are scanned for a provided set of prefiltering keywords to be contained in the fields sample attribute, sample name, or experiment name. Moreover, additional information to filter for the taxon identifier and the library strategy can be provided. The criterion of samples to be returned is as follows: Only if one of the provided prefiltering keywords is identified and the taxon identifier and library strategy are identical with the selected choice, the sample is included in the output subset.
 
-For further reading and documentation see the [FastQC help](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
 
-> **NB:** The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality. To see how your reads look after trimming, look at the FastQC reports in the `trim_galore` directory.
+**Output directory: `results/SRAdb`**
 
-**Output directory: `results/fastqc`**
+* `prefiltering.tsv`
+  * Contains all samples with fitting taxon ID, library strategy and one or more prefiltering keywords
 
-* `sample_fastqc.html`
-  * FastQC report, containing quality metrics for your untrimmed raw fastq files
-* `zips/sample_fastqc.zip`
-  * zip file containing the FastQC report, tab-delimited data file and plot images
+## keyword_filtering
 
-## MultiQC
+The samples are classified into multiple classes according to a provided set of defining keywords for each class. 
 
-[MultiQC](http://multiqc.info) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in within the report data directory.
+**Output directory: `results/keyword_filtering`**
 
-The pipeline has special steps which allow the software versions used to be reported in the MultiQC output for future traceability.
-
-**Output directory: `results/multiqc`**
-
-* `Project_multiqc_report.html`
-  * MultiQC report - a standalone HTML file that can be viewed in your web browser
-* `Project_multiqc_data/`
-  * Directory containing parsed statistics from the different tools used in the pipeline
-
-For more information about how to use MultiQC reports, see [http://multiqc.info](http://multiqc.info)
+* `download_lists/`
+  * Directory containing newline separated lists of SRA run accession for each class
+* `sample_overview/`
+  * Directory containing tsv files for each class. The tsv files contain information about each samples' attributes and keywords on which the classification was based on.
+* `summary_statistic/`
+  * Directory containing a summary file for each class. The summary file contains the number of samples, the number of projects and the size of each project.

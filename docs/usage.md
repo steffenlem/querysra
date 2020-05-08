@@ -1,4 +1,4 @@
-# nf-core/querysra: Usage
+# steffenlem/querysra: Usage
 
 ## Table of contents
 
@@ -9,12 +9,14 @@
   * [Reproducibility](#reproducibility)
 * [Main arguments](#main-arguments)
   * [`-profile`](#-profile)
-  * [`--reads`](#--reads)
-  * [`--single_end`](#--single_end)
-* [Reference genomes](#reference-genomes)
-  * [`--genome` (using iGenomes)](#--genome-using-igenomes)
-  * [`--fasta`](#--fasta)
-  * [`--igenomes_ignore`](#--igenomes_ignore)
+  * [`--preselection`](#--preselection)
+  * [`--blacklist`](#--blacklist)
+  * [`--classes_keywords`](#--classes_keywords)
+  * [`--sradb`](#--sradb)
+  * [`--taxon_id`](#--taxon_id)
+  * [`--library_strategy`](#--library_strategy)
+  * [`--get_access_status`](#--get_access_status)
+  * [`--ncbi_api_key`](#--ncbi_api_key)
 * [Job resources](#job-resources)
   * [Automatic resubmission](#automatic-resubmission)
   * [Custom resource requests](#custom-resource-requests)
@@ -26,7 +28,6 @@
   * [`--outdir`](#--outdir)
   * [`--email`](#--email)
   * [`--email_on_fail`](#--email_on_fail)
-  * [`--max_multiqc_email_size`](#--max_multiqc_email_size)
   * [`-name`](#-name)
   * [`-resume`](#-resume)
   * [`-c`](#-c)
@@ -37,7 +38,6 @@
   * [`--max_cpus`](#--max_cpus)
   * [`--plaintext_email`](#--plaintext_email)
   * [`--monochrome_logs`](#--monochrome_logs)
-  * [`--multiqc_config`](#--multiqc_config)
 
 ## Introduction
 
@@ -56,7 +56,7 @@ NXF_OPTS='-Xms1g -Xmx4g'
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/querysra --reads '*_R{1,2}.fastq.gz' -profile docker
+nextflow run steffenlem/querysra --reads '*_R{1,2}.fastq.gz' -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -75,14 +75,14 @@ results         # Finished results (configurable, see below)
 When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
 
 ```bash
-nextflow pull nf-core/querysra
+nextflow pull steffenlem/querysra
 ```
 
 ### Reproducibility
 
 It's a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
-First, go to the [nf-core/querysra releases page](https://github.com/nf-core/querysra/releases) and find the latest version number - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`.
+First, go to the [steffenlem/querysra releases page](https://github.com/steffenlem/querysra/releases) and find the latest version number - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`.
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
@@ -96,8 +96,6 @@ Several generic profiles are bundled with the pipeline which instruct the pipeli
 
 > We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 
-The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
-
 Note that multiple profiles can be loaded, for example: `-profile test,docker` - the order of arguments is important!
 They are loaded in sequence, so later profiles can overwrite earlier profiles.
 
@@ -105,10 +103,10 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 
 * `docker`
   * A generic configuration profile to be used with [Docker](http://docker.com/)
-  * Pulls software from dockerhub: [`nfcore/querysra`](http://hub.docker.com/r/nfcore/querysra/)
+  * Pulls software from dockerhub: [`steffenlem/querysra`](http://hub.docker.com/r/steffenlem/querysra/)
 * `singularity`
   * A generic configuration profile to be used with [Singularity](http://singularity.lbl.gov/)
-  * Pulls software from DockerHub: [`nfcore/querysra`](http://hub.docker.com/r/nfcore/querysra/)
+  * Pulls software from DockerHub: [`steffenlem/querysra`](http://hub.docker.com/r/steffenlem/querysra/)
 * `conda`
   * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker or Singularity.
   * A generic configuration profile to be used with [Conda](https://conda.io/docs/)
@@ -119,97 +117,78 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 
 <!-- TODO nf-core: Document required command line parameters -->
 
-### `--reads`
+### `--preselection`
 
-Use this to specify the location of your input FastQ files. For example:
+A newline-separated file of keywords to initially search the complete SRA database. For example:
+```bash
+--preselection some_file.txt
+```
+
+### `--blacklist`
+
+A newline-separated file of keywords that are not allowed to be included in the samples' description of the final output. 
+```bash
+--blacklist some_file.txt
+```
+
+### `--classes_keywords`
+
+JSON file defining one or more groups of samples in the output. For each group/class, a list of keywords is defined that identify samples for the respective class. 
+```bash
+--classes_keywords some_file.txt
+```
+
+### `--sradb`
+
+This parameter allows providing an SRAmetadb sqlite database file, which contains all the metadata information of samples in SRA. For example:
+```bash
+--classes_keywords some_file.txt
+```
+If no file is not provided, the database file is downloaded automatically (~2 GB). However, it can be advantageous to download the file and provide it to the pipeline manually, if multiple reruns are performed.
+The file can be obtained here:
+https://s3.amazonaws.com/starbuck1/sradb/SRAmetadb.sqlite.gz
+
+### `--taxon_id`
+
+Use this to specify the NCBI taxonomy ID of the samples to search:
+e.g.: Homo sapiens 9606; Mus Musculus 10090
 
 ```bash
---reads 'path/to/data/sample_*_{1,2}.fastq'
+--taxon_id 9606
 ```
 
-Please note the following requirements:
+### `--library_strategy`
 
-1. The path must be enclosed in quotes
-2. The path must have at least one `*` wildcard character
-3. When using the pipeline with paired end data, the path must use `{1,2}` notation to specify read pairs.
-
-If left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`
-
-### `--single_end`
-
-By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--reads`. For example:
+Use this to specify the library strategy of the samples to search:
+e.g.: RNA-Seq, WGS, WXS, ChIP-Seq
+More information about the different library strategies can be found here:
+https://www.ebi.ac.uk/ena/submit/reads-library-strategy
 
 ```bash
---single_end --reads '*.fastq'
+--blacklist some_file.txt
 ```
 
-It is not possible to run a mixture of single-end and paired-end files in one run.
+### `--get_access_status`
 
-## Reference genomes
-
-The pipeline config files come bundled with paths to the illumina iGenomes reference index files. If running with docker or AWS, the configuration is set up to use the [AWS-iGenomes](https://ewels.github.io/AWS-iGenomes/) resource.
-
-### `--genome` (using iGenomes)
-
-There are 31 different species supported in the iGenomes references. To run the pipeline, you must specify which to use with the `--genome` flag.
-
-You can find the keys to specify the genomes in the [iGenomes config file](../conf/igenomes.config). Common genomes that are supported are:
-
-* Human
-  * `--genome GRCh37`
-* Mouse
-  * `--genome GRCm38`
-* _Drosophila_
-  * `--genome BDGP6`
-* _S. cerevisiae_
-  * `--genome 'R64-1-1'`
-
-> There are numerous others - check the config file for more.
-
-Note that you can use the same configuration setup to save sets of reference files for your own use, even if they are not part of the iGenomes resource. See the [Nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for instructions on where to save such a file.
-
-The syntax for this reference configuration is as follows:
-
-<!-- TODO nf-core: Update reference genome example according to what is needed -->
-
-```nextflow
-params {
-  genomes {
-    'GRCh37' {
-      fasta   = '<path to the genome fasta file>' // Used if no star index given
-    }
-    // Any number of additional genomes, key is used with --genome
-  }
-}
-```
-
-<!-- TODO nf-core: Describe reference path flags -->
-
-### `--fasta`
-
-If you prefer, you can specify the full path to your reference genome when you run the pipeline:
+Set this flag to check the access status for each sample (either public or dbGAP protected). To check the status, an NCBI api key is needed.
 
 ```bash
---fasta '[path to Fasta reference]'
+--get_access_status 
 ```
 
-### `--igenomes_ignore`
+### `--ncbi_api_key`
 
-Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.
+This argument is used to provide an NCBI API key. The key can be obtained from the NCBI website (Info: https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/). 
+
+```bash
+--ncbi_api_key ncbi_key 
+```
 
 ## Job resources
 
 ### Automatic resubmission
 
 Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the steps in the pipeline, if the job exits with an error code of `143` (exceeded requested resources) it will automatically resubmit with higher requests (2 x original, then 3 x original). If it still fails after three times then the pipeline is stopped.
-
-### Custom resource requests
-
-Wherever process-specific requirements are set in the pipeline, the default value can be changed by creating a custom config file. See the files hosted at [`nf-core/configs`](https://github.com/nf-core/configs/tree/master/conf) for examples.
-
-If you are likely to be running `nf-core` pipelines regularly it may be a good idea to request that your custom config file is uploaded to the `nf-core/configs` git repository. Before you do this please can you test that the config file works with your pipeline of choice using the `-c` parameter (see definition below). You can then create a pull request to the `nf-core/configs` repository with the addition of your config file, associated documentation file (see examples in [`nf-core/configs/docs`](https://github.com/nf-core/configs/tree/master/docs)), and amending [`nfcore_custom.config`](https://github.com/nf-core/configs/blob/master/nfcore_custom.config) to include your custom profile.
-
-If you have any questions or issues please send us a message on [Slack](https://nf-co.re/join/slack).
 
 ## AWS Batch specific parameters
 
@@ -245,15 +224,9 @@ Set this parameter to your e-mail address to get a summary e-mail with details o
 
 This works exactly as with `--email`, except emails are only sent if the workflow is not successful.
 
-### `--max_multiqc_email_size`
-
-Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB).
-
 ### `-name`
 
 Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
-
-This is used in the MultiQC report (if not default) and in the summary HTML / e-mail (always).
 
 **NB:** Single hyphen (core Nextflow option)
 
@@ -325,7 +298,3 @@ Set to receive plain-text e-mails instead of HTML formatted.
 ### `--monochrome_logs`
 
 Set to disable colourful command line output and live life in monochrome.
-
-### `--multiqc_config`
-
-Specify a path to a custom MultiQC configuration file.

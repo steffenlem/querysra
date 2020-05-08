@@ -1,4 +1,4 @@
-# nf-core/querysra feature request
+# steffenlem/querysra feature request
 
 Hi there!
 
