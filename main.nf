@@ -1,4 +1,6 @@
 #!/usr/bin/env nextflow
+import java.awt.geom.NoninvertibleTransformException
+
 /*
 ========================================================================================
                          steffenlem/querysra
@@ -85,12 +87,10 @@ params.sradb = 'NO_FILE'
 sradb_file = file(params.sradb)
 params.taxon_id = '9606' // human is default
 params.library_strategy = 'RNA-Seq'
+params.get_access_status = null
+params.ncbi_api_key = null
 
-//Channel.fromPath("${params.preselection}")
-//        .ifEmpty { exit 1, "Please provide a file containing keywords to search the SRA database" }
-//        .set { keyword_channel }
-
-if (!params.preselection || params.preselection == true) {
+if (!params.preselection  || params.preselection == true) {
     exit 1, "Please provide a file containing keywords to search the SRA database"
 }
 else{
@@ -123,7 +123,14 @@ def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name'] = custom_runName ?: workflow.runName
 // TODO nf-core: Report custom parameters here
-summary['Keywords'] = params.keywords
+summary['preselection'] = params.preselection
+summary['classes_keywords'] = params.classes_keywords
+summary['blacklist'] = params.blacklist
+summary['taxon_id'] = params.taxon_id
+summary['library_strategy'] = params.library_strategy
+summary['sradb'] = params.sradb
+summary['ncbi_api_key'] = params.ncbi_api_key
+summary['get_access_status'] = params.get_access_status
 summary['Max Resources'] = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir'] = params.outdir
@@ -194,8 +201,6 @@ process get_software_versions {
     """
 }
 
-println blacklist_file
-
 /*
  * STEP 1 - SRAdb querying
  */
@@ -216,7 +221,6 @@ process SRAdb {
     """
 }
 
-
 /*
  * STEP 2 - Keyword filtering
  */
@@ -232,15 +236,12 @@ process keyword_filtering {
     file "*" into outfiles
 
     script:
-
     def get_access_status_param = params.get_access_status ? "--get_access_status" : ''
     def ncbi_api_key_param = params.ncbi_api_key ? "--ncbi_api_key $params.ncbi_api_key" : ''
-
     """
     sra_filtering.py -i $filtered_sra -o . -b $blacklist -k  $classes_keywords_list $get_access_status_param $ncbi_api_key_param
     """
 }
-
 
 /*
  * STEP 3 - Output Description HTML
